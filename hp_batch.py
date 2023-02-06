@@ -77,6 +77,8 @@ my_out=np.concatenate((out_cd[:,None],out_cl[:,None]),axis=1)
 xtr0 = my_inp[I][:n]
 ttr1 = my_out[I][:n]
 
+
+#list of discrete batch sizes to train model
 HP_BATCH= hp.HParam('batch_size', hp.Discrete([16,32,64,128,256,512]))
 METRIC_MSE = 'Mean Squared Error'
 
@@ -88,6 +90,7 @@ with tf.summary.create_file_writer('logs/batch').as_default():
 
 epochs = list(range(0,gg))
 
+#this function sets the batch size of the model for training based on the list given.
 def train_test_model(hparams):
     xx = 90
     model = tf.keras.models.Sequential()
@@ -138,6 +141,8 @@ def run(run_dir, hparams):
     
 session_num = 0
 #tensorboard --logdir='C:/Users/lihen/projects/tf-gpu-MNIST/logs/hparam_tuning5layer' is the path to called Tensorboard for comparing models
+
+#print details and keep logs upon script execution
 for batch in HP_BATCH.domain.values:
     hparams = {
         HP_BATCH: batch
