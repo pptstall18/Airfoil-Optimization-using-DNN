@@ -5,6 +5,7 @@ Created on Tue Feb  2 14:19:39 2021
 @author: lihen
 """
 
+#import relevant packages and set some important parameters
 import time
 start_time = time.time()
 import random
@@ -23,13 +24,15 @@ result = pd.read_pickle('./naca4_clcd_turb_st_3para.pkl', compression=None)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
+#set the random seeds required for initialization
 def reset_random_seeds():
    os.environ['PYTHONHASHSEED']=str(1615400000)
    tf.random.set_seed(1615400000)
    np.random.seed(1615400000)
    random.seed(1615400000)
 gg=1000
-#load data
+
+#load data from naca4_clcd_turb_st_3para.pkl
 inp_reno=[]
 inp_aoa=[]
 inp_para=[]
@@ -76,6 +79,7 @@ my_out=np.concatenate((out_cd[:,None],out_cl[:,None]),axis=1)
 xtr0 = my_inp[I][:n]
 ttr1 = my_out[I][:n]
 
+#list of optimizers to train model
 HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['ftrl',
     'adam', 
     'adadelta',
@@ -96,6 +100,7 @@ with tf.summary.create_file_writer('logs/optimizer/').as_default():
 
 epochs = list(range(0,gg))
 
+#this function sets the optimizer of the model for training based on the list given.
 def train_test_model(hparams):
     xx = 90
     model = tf.keras.models.Sequential()
@@ -138,6 +143,7 @@ def train_test_model(hparams):
     mse = np.array(history.history['val_loss'])
     return mse
 
+#records the loss function of this model 
 def run(run_dir, hparams):
   with tf.summary.create_file_writer(run_dir).as_default():
     hp.hparams(hparams)  # record the values used in this trial
@@ -148,6 +154,7 @@ def run(run_dir, hparams):
     
 #tensorboard --logdir='C:/Users/lihen/projects/tf-gpu-MNIST/logs/hparam_tuning5layer'
 
+#print details and keep logs upon script execution
 for optimizer in HP_OPTIMIZER.domain.values:
     hparams = {
         HP_OPTIMIZER: optimizer
