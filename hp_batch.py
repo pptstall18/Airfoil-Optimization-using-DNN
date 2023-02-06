@@ -5,7 +5,7 @@ Created on Tue Mar  9 00:04:43 2021
 @author: lihen
 """
 
-
+#import relevant packages and set some important parameters
 import time
 start_time = time.time()
 import random
@@ -30,7 +30,7 @@ def reset_random_seeds():
    np.random.seed(1615400000)
    random.seed(1615400000)
 gg=1000
-#load data
+#load data from naca4_clcd_turb_st_3para.pkl
 inp_reno=[]
 inp_aoa=[]
 inp_para=[]
@@ -67,7 +67,7 @@ I = np.arange(N)
 np.random.shuffle(I)
 n=N
 
-#normalize
+#normalize the numeral values such that the max value is 1
 inp_reno=inp_reno/100000.
 inp_aoa=inp_aoa/14.0
 
@@ -127,6 +127,7 @@ def train_test_model(hparams):
     mse = np.array(history.history['val_loss'])
     return mse
 
+#records the loss function of this model 
 def run(run_dir, hparams):
   with tf.summary.create_file_writer(run_dir).as_default():
     hp.hparams(hparams)  # record the values used in this trial
@@ -136,7 +137,7 @@ def run(run_dir, hparams):
         tf.summary.scalar(METRIC_MSE, mse, step=epoch+1)
     
 session_num = 0
-#tensorboard --logdir='C:/Users/lihen/projects/tf-gpu-MNIST/logs/hparam_tuning5layer'
+#tensorboard --logdir='C:/Users/lihen/projects/tf-gpu-MNIST/logs/hparam_tuning5layer' is the path to called Tensorboard for comparing models
 for batch in HP_BATCH.domain.values:
     hparams = {
         HP_BATCH: batch
