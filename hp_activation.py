@@ -5,6 +5,7 @@ Created on Mon Mar  8 23:58:43 2021
 @author: lihen
 """
 
+#import relevant packages and set some important parameters
 import time
 start_time = time.time()
 import random
@@ -23,13 +24,16 @@ result = pd.read_pickle('./naca4_clcd_turb_st_3para.pkl', compression=None)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
+#set the random seeds required for initialization
 def reset_random_seeds():
    os.environ['PYTHONHASHSEED']=str(1615400000)
    tf.random.set_seed(1615400000)
    np.random.seed(1615400000)
    random.seed(1615400000)
 gg=1000
-#load data
+
+
+#load data from naca4_clcd_turb_st_3para.pkl
 inp_reno=[]
 inp_aoa=[]
 inp_para=[]
@@ -66,7 +70,7 @@ I = np.arange(N)
 np.random.shuffle(I)
 n=N
 
-#normalize
+#normalize the numeral values such that the max value is 1
 inp_reno=inp_reno/100000.
 inp_aoa=inp_aoa/14.0
 
@@ -76,6 +80,7 @@ my_out=np.concatenate((out_cd[:,None],out_cl[:,None]),axis=1)
 xtr0 = my_inp[I][:n]
 ttr1 = my_out[I][:n]
 
+#list of activation functions to train model
 HP_ACTIVATION = hp.HParam('activation', hp.Discrete(['elu',
                                                      'exponential',
                                                     
@@ -98,6 +103,7 @@ with tf.summary.create_file_writer('logs/activation').as_default():
     
 epochs = list(range(0,gg))
 
+#this function sets the activation function of the model for training based on the list given.
 def train_test_model(hparams):
     activation_name = hparams[HP_ACTIVATION]
     if activation_name == "elu":
@@ -150,6 +156,7 @@ def train_test_model(hparams):
     mse = np.array(history.history['val_loss'])
     return mse
 
+#records the loss function of this model 
 def run(run_dir, hparams):
   with tf.summary.create_file_writer(run_dir).as_default():
     hp.hparams(hparams)  # record the values used in this trial
@@ -159,8 +166,9 @@ def run(run_dir, hparams):
         tf.summary.scalar(METRIC_MSE, mse, step=epoch+1)
     
 session_num = 0
-#tensorboard --logdir='C:/Users/lihen/projects/tf-gpu-MNIST/logs/hparam_tuning5layer'
+#tensorboard --logdir='C:/Users/lihen/projects/tf-gpu-MNIST/logs/hparam_tuning5layer' is the path to called Tensorboard for comparing models
 
+#print details and keep logs upon script execution
 for activation in HP_ACTIVATION.domain.values:
     hparams = {
         HP_ACTIVATION: activation
