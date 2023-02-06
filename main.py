@@ -5,6 +5,7 @@ Created on Wed Feb  3 23:18:38 2021
 @author: lihen
 """
 
+#import relevant packages and set some important parameters
 import time
 start_time = time.time()
 import numpy as np
@@ -14,6 +15,7 @@ import tensorflow as tf
 import os
 import pandas as pd
 import sys
+import pickle
 from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping, ModelCheckpoint
 np.set_printoptions(threshold=sys.maxsize)
 pd.set_option("display.max_rows", None, "display.max_columns", None)
@@ -21,14 +23,15 @@ result = pd.read_pickle(r'C:/Users/lihen/projects/tf-gpu-MNIST/naca4_clcd_turb_s
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-import pickle
+#set the random seeds required for initialization
+
 os.environ['PYTHONHASHSEED']=str(1615400000)
 tf.random.set_seed(1615400000)
 np.random.seed(1615400000)
 random.seed(1615400000)
 os.environ['TF_DETERMINISTIC_OPS'] = '1'
     
-    
+#load data from naca4_clcd_turb_st_3para.pkl    
 #load data
 inp_reno=[]
 inp_aoa=[]
@@ -67,8 +70,7 @@ I = np.arange(N)
 np.random.shuffle(I)
 n=N
 
-
-#normalize
+#normalize the numeral values such that the max value is 1
 inp_reno=inp_reno/100000.
 inp_aoa=inp_aoa/14.0
 
